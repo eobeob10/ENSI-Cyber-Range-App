@@ -18,20 +18,28 @@ def scan(ip):
     print(result)
     return result
 
-result = []
-netmask = []
-for interface in netifaces.interfaces(): # interate through interfaces: eth0, eth1, wlan0...
-    if (interface != "lo") and (netifaces.AF_INET in netifaces.ifaddresses(interface)): # filter loopback, and active ipv4
-        for ip_address in netifaces.ifaddresses(interface)[netifaces.AF_INET]: 
-            if (ip_address['addr'] != "127.0.0.1") :          
-                result.append(ip_address['addr'])
-                netmask.append(ip_address['netmask'])
 
-ip_networks = []
 
-for i in range(len(result)):
-    ip_networks.append(str(IPNetwork(result[i]+'/'+netmask[i]).cidr))
-print (ip_networks)
+def network():
+    result = []
+    netmask = []
+    for interface in netifaces.interfaces(): # interate through interfaces: eth0, eth1, wlan0...
+        if (interface != "lo") and (netifaces.AF_INET in netifaces.ifaddresses(interface)): # filter loopback, and active ipv4
+            for ip_address in netifaces.ifaddresses(interface)[netifaces.AF_INET]: 
+                if (ip_address['addr'] != "127.0.0.1") :          
+                    result.append(ip_address['addr'])
+                    netmask.append(ip_address['netmask'])
 
-for i in ip_networks :
-    scan(i)
+    return (result,netmask)
+
+def scanner():
+
+    result, netmask = network()
+    ip_networks = []
+
+    for i in range(len(result)):
+        ip_networks.append(str(IPNetwork(result[i]+'/'+netmask[i]).cidr))
+    print (ip_networks)
+
+    for i in ip_networks :
+        scan(i)
