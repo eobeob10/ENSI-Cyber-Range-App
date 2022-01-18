@@ -41,5 +41,10 @@ def scanner():
         ip_networks.append(str(IPNetwork(result[i]+'/'+netmask[i]).cidr))
     print (ip_networks)
 
+    scanned =[]
     for i in ip_networks :
-        scan(i)
+        scanned.append(scan(i))
+
+    return scanned
+
+    
