@@ -51,6 +51,7 @@ if __name__ == "__main__":
             targ = window.listWidget.selectedItems()[0].text()
             if (targ in targets) :
                 targets.remove(targ)
+                window.console.append(targ + " deleted from the target list")
             else :
                 window.console.append("This target doesn't exist in the list of selected targets")
         except IndexError :
