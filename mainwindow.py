@@ -53,7 +53,7 @@ if __name__ == "__main__":
             targets.clear()
             window.console.append("Targets cleared")
             window.target1.setText("Select Target 1")
-            window.target2.setText("Select Target 1")
+            window.target2.setText("Select Target 2")
         else :
             window.console.append("List already cleared")
 
