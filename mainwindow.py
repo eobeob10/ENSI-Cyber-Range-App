@@ -33,13 +33,15 @@ if __name__ == "__main__":
     def addTargetClicked() :
         try :
             newtar = window.listWidget.selectedItems()[0].text()
-            targets.add(newtar)
-            if (len(list)==1) :
-                window.target2.set("Target 2\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
-            elif (len(list) == 0):
-                window.target1.set("Target 1\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
-            else : 
-                window.console.append("Number of targets exceeded !")
+            if (len(targets) < 2) :
+                targets.add(newtar)
+                if (len(targets) == 1):
+                    window.target1.setText("Target 1\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
+                elif (len(targets)==2) :
+                    window.target2.setText("Target 2\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
+                else : 
+                    window.console.append("Number of targets exceeded !")
+            
             output = newtar + " added to your targets list"
             print (output)
             window.console.append(output)
