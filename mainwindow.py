@@ -1,3 +1,4 @@
+from os import remove
 import sys
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton, QListWidgetItem
@@ -27,7 +28,7 @@ if __name__ == "__main__":
                 window.listWidget.addItem(listWidgetItem)
             scanning = False
         else :
-            window.console.append("Already scanning !")    
+            window.console.append("Already scanning !")
     @Slot()
     def addTargetClicked() :
         try :
@@ -37,11 +38,22 @@ if __name__ == "__main__":
             window.console.append(output)
         except IndexError:
             window.console.append("You didn't select a target")
+    @Slot()
+    def deleteTargetClicked() :
+        try :
+            targ = window.listWidget.selectedItems()[0].text()
+            if (targ in targets) :
+                targets.remove(targ)
+            else :
+                window.console.append("This target doesn't exist in the list of selected targets")
+        except IndexError :
+            window.console.append("You didn't select a target")
+
 
 
     window.scan.clicked.connect(scan)
     window.addTarget.clicked.connect(addTargetClicked)
-    
+    window.deleteTarget.clicked.connect(deleteTargetClicked)
     
 
     
