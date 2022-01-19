@@ -43,8 +43,6 @@ def scanner():
 
     scanned =[]
     for i in ip_networks :
-        scanned.append(scan(i))
+        scanned+=scan(i)
 
     return scanned
-
-    
