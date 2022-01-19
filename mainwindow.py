@@ -49,15 +49,13 @@ if __name__ == "__main__":
             window.console.append("You didn't select a target")
     @Slot()
     def deleteTargetClicked() :
-        try :
-            targ = window.listWidget.selectedItems()[0].text()
-            if (targ in targets) :
-                targets.remove(targ)
-                window.console.append(targ + " deleted from the target list")
-            else :
-                window.console.append("This target doesn't exist in the list of selected targets")
-        except IndexError :
-            window.console.append("You didn't select a target")
+        if (len(targets)>0) :
+            targets.clear()
+            window.console.append("Targets cleared")
+            window.target1.setText("Select Target 1")
+            window.target2.setText("Select Target 1")
+        else :
+            window.console.append("List already cleared")
 
 
 

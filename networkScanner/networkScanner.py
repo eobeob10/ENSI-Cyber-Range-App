@@ -46,3 +46,5 @@ def scanner():
         scanned+=scan(i)
 
     return scanned
+
+    
