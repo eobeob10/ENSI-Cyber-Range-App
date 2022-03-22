@@ -14,10 +14,12 @@ if __name__ == "__main__":
     window = loader.load(ui_file)
     ui_file.close()
     window.console.setText("")
+    attackName = "None"
 
     @Slot()
     def scan(scanning):
         if(scanning==False) :
+            window.console.append("Scanner begin")
             print("Scanner begin")
             scanning = True
             listHosts = scanner()
@@ -58,14 +60,28 @@ if __name__ == "__main__":
             window.console.append("List already cleared")
     @Slot()
     def startAttackClicked() :
-        attackName = window.attacks.currentText()
-        window.console.append(attackName + " started")
+        global attackName
+        if (attackName == "None") : 
+            attackName = window.attacks.currentText()
+            window.console.append(attackName + " attack started")
+        else :
+            window.console.append("You should stop the running attack first")
+
+    @Slot()
+    def stopAttackClicked() :
+        global attackName
+        if (attackName != "None") : 
+            window.console.append(attackName + " attack stopped")
+            attackName = "None"
+        else :
+            window.console.append("You should start the attack first")
 
 
     window.scan.clicked.connect(scan)
     window.addTarget.clicked.connect(addTargetClicked)
     window.deleteTarget.clicked.connect(deleteTargetClicked)
     window.startAttack.clicked.connect(startAttackClicked)
+    window.stopAttack.clicked.connect(stopAttackClicked)
     
 
     
