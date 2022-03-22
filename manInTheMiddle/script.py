@@ -1,7 +1,6 @@
 import scapy.all as scapy
 import time
 import sys
-from NetworkScanner.networkScanner import scanner
 
 
 def getMac(iprecherchee,tab):

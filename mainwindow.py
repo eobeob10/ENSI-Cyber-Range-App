@@ -3,7 +3,7 @@ import sys
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton, QListWidgetItem
 from PySide6.QtCore import QFile, QIODevice, Slot
-from NetworkScanner.networkScanner import scanner
+from networkScanner.networkScanner import scanner
 targets = set()
 scanning = False
 if __name__ == "__main__":
