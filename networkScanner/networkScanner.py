@@ -24,7 +24,8 @@ def network():
     result = []
     netmask = []
     for interface in netifaces.interfaces(): # interate through interfaces: eth0, eth1, wlan0...
-        if (interface != "lo") and (netifaces.AF_INET in netifaces.ifaddresses(interface)): # filter loopback, and active ipv4
+        print("interface = ", interface)
+        if (interface != "lo") and (interface != "docker0") and (netifaces.AF_INET in netifaces.ifaddresses(interface)): # filter loopback, and active ipv4
             for ip_address in netifaces.ifaddresses(interface)[netifaces.AF_INET]: 
                 if (ip_address['addr'] != "127.0.0.1") :          
                     result.append(ip_address['addr'])
@@ -44,7 +45,7 @@ def scanner():
     scanned =[]
     for i in ip_networks :
         scanned+=scan(i)
-
+    print("Scanned successfully")
     return scanned
 
     
