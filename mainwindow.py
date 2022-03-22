@@ -56,12 +56,16 @@ if __name__ == "__main__":
             window.target2.setText("Select Target 2")
         else :
             window.console.append("List already cleared")
-
+    @Slot()
+    def startAttackClicked() :
+        attackName = window.attacks.currentText()
+        window.console.append(attackName + " started")
 
 
     window.scan.clicked.connect(scan)
     window.addTarget.clicked.connect(addTargetClicked)
     window.deleteTarget.clicked.connect(deleteTargetClicked)
+    window.startAttack.clicked.connect(startAttackClicked)
     
 
     
