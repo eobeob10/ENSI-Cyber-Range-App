@@ -1,8 +1,8 @@
 from os import remove
-import sys
+import sys, time, traceback
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton, QListWidgetItem
-from PySide6.QtCore import QFile, QIODevice, Slot
+from PySide6.QtCore import QFile, QIODevice, QObject, Slot, Signal, QRunnable, QThreadPool
 from networkScanner.networkScanner import scanner
 from manInTheMiddle.script import startSpoof, stopSpoof
 
@@ -10,6 +10,41 @@ from manInTheMiddle.script import startSpoof, stopSpoof
 # Global variables
 targets = []
 scanning = False
+
+class WorkerSignals(QObject):
+
+    finished = Signal()
+    error = Signal(tuple)
+    result = Signal(object)
+
+
+
+
+class Worker(QRunnable):
+
+    def __init__(self, fn, *args, **kwargs):
+        super(Worker, self).__init__()
+
+        # Store constructor arguments (re-used for processing)
+        self.fn = fn
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = WorkerSignals()
+
+    @Slot()
+    def run(self):
+
+        # Retrieve args/kwargs here; and fire processing using them
+        try:
+            result = self.fn(*self.args, **self.kwargs)
+        except:
+            traceback.print_exc()
+            exctype, value = sys.exc_info()[:2]
+            self.signals.error.emit((exctype, value, traceback.format_exc()))
+        else:
+            self.signals.result.emit(result)  # Return the result of the processing
+        finally:
+            self.signals.finished.emit()  # Done
 
 
 # Functions to start and stop attacking 
@@ -24,7 +59,35 @@ def stopAttacking(name) :
         victim1IP,victim1Mac = targets[0].split(" : ")
         victim2IP,victim2Mac = targets[1].split(" : ")
         stopSpoof(victim1IP,victim2IP,victim1Mac, victim2Mac)
-        
+
+
+def scanning_complete():
+    print("scanning COMPLETE!")
+
+def scanning_output(output):
+    listHosts = output
+    window.listWidget.clear()
+    print("Scanned list = ",listHosts)
+    for host in listHosts:
+        listWidgetItem = QListWidgetItem(host["ip"]+' : '+host["mac"])
+        window.listWidget.addItem(listWidgetItem)
+        global scanning 
+        scanning = False
+
+def attacking_complete():
+    print("attacking COMPLETE!")
+    attackName = "None"
+
+def attacking_output(output):
+    print(output)
+
+def stoppingAttack_complete():
+    print("Stopping Attack COMPLETE!")
+
+def stoppingAttack_output(output):
+    print(output)
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     ui_file_name = "form.ui"
@@ -40,15 +103,18 @@ if __name__ == "__main__":
     def scan(scanning):
         if(scanning==False) :
             window.console.append("Scanner begin")
-            print("Scanner begin")
+            print("Scanner begin") 
             scanning = True
-            listHosts = scanner()
-            window.listWidget.clear()
-            print("Scanned list = ",listHosts)
-            for host in listHosts:
-                listWidgetItem = QListWidgetItem(host["ip"]+' : '+host["mac"])
-                window.listWidget.addItem(listWidgetItem)
-            scanning = False
+            #listHosts = scanner()
+
+            scanThread = Worker(scanner)
+            scanThread.signals.result.connect(scanning_output)
+            scanThread.signals.finished.connect(scanning_complete)
+
+            window.threadpool.start(scanThread)
+            
+
+            
         else :
             window.console.append("Already scanning !")
     @Slot()
@@ -87,9 +153,16 @@ if __name__ == "__main__":
     def startAttackClicked() :
         global attackName
         if (attackName == "None") : 
+
             attackName = window.attacks.currentText()
             window.console.append(attackName + " attack started")
-            attacking(attackName)
+            #attacking(attackName)
+            startAttackThread = Worker(attacking, attackName)
+            startAttackThread.signals.result.connect(attacking_output)
+            startAttackThread.signals.finished.connect(attacking_complete)
+
+            window.threadpool.start(startAttackThread)
+
         else :
             window.console.append("You should stop the running attack first")
 
@@ -98,8 +171,15 @@ if __name__ == "__main__":
         global attackName
         if (attackName != "None") : 
             window.console.append(attackName + " attack stopped")
-            stopAttacking(attackName)
-            attackName = "None"
+            #stopAttacking(attackName)
+            
+            window.threadpool.stop(startAttackThread)
+            stopAttackThread = Worker(stopAttacking, attackName)
+            stopAttackThread.signals.result.connect(stoppingAttack_output)
+            stopAttackThread.signals.finished.connect(stoppingAttack_complete)
+
+            window.threadpool.start(stopAttackThread)
+
         else :
             window.console.append("You should start the attack first")
 
@@ -111,7 +191,7 @@ if __name__ == "__main__":
     window.stopAttack.clicked.connect(stopAttackClicked)
     
 
-    
+    window.threadpool = QThreadPool()
 
     window.show()
 
