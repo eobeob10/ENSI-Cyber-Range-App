@@ -1,4 +1,3 @@
-from os import remove
 import sys, time, traceback
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QPushButton, QListWidgetItem
@@ -166,18 +165,24 @@ if __name__ == "__main__":
     def startAttackClicked() :
         global attackName
         if (attackName == "None") : 
+            if (len(targets) == 2) :
+                attackName = window.attacks.currentText()
+                window.console.append(attackName + " attack started")
+                #attacking(attackName)
+                startAttackThread = Worker(attacking, attackName)
+                startAttackThread.signals.result.connect(attacking_output)
+                startAttackThread.signals.finished.connect(attacking_complete)
 
-            attackName = window.attacks.currentText()
-            window.console.append(attackName + " attack started")
-            #attacking(attackName)
-            startAttackThread = Worker(attacking, attackName)
-            startAttackThread.signals.result.connect(attacking_output)
-            startAttackThread.signals.finished.connect(attacking_complete)
-
-            window.threadpool.start(startAttackThread)
+                window.threadpool.start(startAttackThread)
+            else :
+                mess = "You have to select two targets first"
+                print(mess)
+                window.console.append(mess)
 
         else :
-            window.console.append("You should stop the running attack first")
+            mess = "You should stop the running attack first"
+            print(mess)
+            window.console.append(mess)
 
     @Slot()
     def stopAttackClicked() :
@@ -194,6 +199,8 @@ if __name__ == "__main__":
             stopAttackThread.signals.finished.connect(stoppingAttack_complete)
 
             window.threadpool.start(stopAttackThread)            
+
+            attackName = "None"
 
         else :
             window.console.append("You should start the attack first")
