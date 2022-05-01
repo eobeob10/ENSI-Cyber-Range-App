@@ -40,4 +40,4 @@ def DHCPstarving(inter) :
     while (number > len(listInterfaces)) :
         number = int(input("Enter a valid number :")) """
 
-    sendp(DHCP_DISCOVER, iface=inter)
+    sendp(DHCP_DISCOVER, iface=inter, verbose=0)

@@ -1,11 +1,14 @@
 import sys, time, traceback
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QComboBox, QListWidgetItem, QVBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QListWidgetItem, QVBoxLayout
 from PySide6.QtCore import QFile, QObject, Slot, Signal, QRunnable, QThreadPool
+from qt_material import *
+
 from networkScanner.networkScanner import scanner
 from manInTheMiddle.script import stopSpoof, spoofer
 from DHCP_Starvation.DHCP_Starvation import getInterfaces, DHCPstarving
 from SYN_flooding.synFlooding import  SYN_Flood
+
 
 # Global variables
 targets = []
@@ -62,7 +65,7 @@ def attacking(name) :
             spoofer(victim2IP,victim1IP,victim1Mac)
             printed = "[+] Sent packets "+ str(packets)
             print(printed)
-            window.console.append(printed)
+            frame.main.console.append(printed)
             sys.stdout.flush()
             packets +=2
             time.sleep(2)
@@ -72,7 +75,10 @@ def attacking(name) :
         print("start attacking DHCP")
         nbPackets = 1
         while (attackingStatus) :
-            print ("[+] sending packet "+str(nbPackets))
+            if nbPackets%100 == 0:
+                msg = "[+] sending packet "+str(nbPackets)
+                print(msg)
+                frame.main.console.append(msg)
             DHCPstarving(inter)
             nbPackets+=1
 
@@ -101,11 +107,17 @@ def scanning_complete():
 
 def scanning_output(output):
     listHosts = output
-    window.listWidget.clear()
+    #frame.main.listWidget.clear()
     print("Scanned list = ",listHosts)
     for host in listHosts:
-        listWidgetItem = QListWidgetItem(host["ip"]+' : '+host["mac"])
-        window.listWidget.addItem(listWidgetItem)
+        hostItem = host["ip"]+' : '+host["mac"]
+        listWidgetItem = QListWidgetItem(hostItem)
+        exist = False
+        for i in range (frame.main.listWidget.count()):
+            if frame.main.listWidget.item(i).text() == hostItem :
+                exist = True 
+        if exist == False:
+            frame.main.listWidget.addItem(listWidgetItem)
         global scanning 
         scanning = False
 
@@ -123,21 +135,38 @@ def stoppingAttack_output(output):
     print(output)
 
 
+class RuntimeStylesheets(QMainWindow, QtStyleTools):
+    def __init__(self):
+        super().__init__()
+        ui_file_name = "form.ui"
+        ui_file = QFile(ui_file_name)
+        self.main = QUiLoader().load(ui_file, self)
+        ui_file.close()
+        apply_stylesheet(app, theme='dark_teal.xml')
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
+    """
     ui_file_name = "form.ui"
     ui_file = QFile(ui_file_name)
     loader = QUiLoader()
     window = loader.load(ui_file)
     ui_file.close()
-    window.console.setText("")
-    window.setWindowTitle("Cyber Range App")
+    """
+    frame = RuntimeStylesheets()
+    frame.main.console.setText("")
+    frame.main.setWindowTitle("Cyber Range App")
+    frame.main.logoensi.setStyleSheet("border-image: url(logo_ensi.png)  0 0 0 0 stretch stretch;")
+    frame.main.cyberrange.setStyleSheet("border-image: url(cyberrange.png)  0 0 0 0 stretch stretch;")
+    #frame.main.background.setStyleSheet("border-image: url(background.jpg) 0 0 0 0 stretch stretch;")
+
+
     attackName = "None"
 
     @Slot()
     def scan(scanning):
         if(scanning==False) :
-            window.console.append("Scanner begin")
+            frame.main.console.append("Scanner begin")
             print("Scanner begin") 
             scanning = True
             #listHosts = scanner()
@@ -146,52 +175,52 @@ if __name__ == "__main__":
             scanThread.signals.result.connect(scanning_output)
             scanThread.signals.finished.connect(scanning_complete)
 
-            window.threadpool.start(scanThread)
+            frame.main.threadpool.start(scanThread)
             
 
             
         else :
-            window.console.append("Already scanning !")
+            frame.main.console.append("Already scanning !")
     @Slot()
     def addTargetClicked() :
         try :
-            newtar = window.listWidget.selectedItems()[0].text()
+            newtar = frame.main.listWidget.selectedItems()[0].text()
             if (len(targets) < 2) :
                 if (newtar not in targets):
                     targets.append(newtar)
                     if (len(targets) == 1):
-                        window.target1.setText("Target 1\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
+                        frame.main.target1.setText("Target 1\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
                     elif (len(targets) == 2) :
-                        window.target2.setText("Target 2\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
+                        frame.main.target2.setText("Target 2\n" + newtar.split(" : ")[0] + "\n" + newtar.split(" : ")[1])
                 else :
-                    window.console.append("Targets already added !")
+                    frame.main.console.append("Targets already added !")
             else : 
-                window.console.append("Number of targets exceeded !")
+                frame.main.console.append("Number of targets exceeded !")
             
 
             print ("targets = ",targets)
             output = newtar + " added to your targets list"
             print (output)
-            window.console.append(output)
+            frame.main.console.append(output)
         except IndexError:
-            window.console.append("You didn't select a target")
+            frame.main.console.append("You didn't select a target")
     @Slot()
     def deleteTargetClicked() :
         if (len(targets)>0) :
             targets.clear()
-            window.console.append("Targets cleared")
-            window.target1.setText("Select Target 1")
-            window.target2.setText("Select Target 2")
+            frame.main.console.append("Targets cleared")
+            frame.main.target1.setText("Select Target 1")
+            frame.main.target2.setText("Select Target 2")
         else :
-            window.console.append("List already cleared")
+            frame.main.console.append("List already cleared")
     @Slot()
     def startAttackClicked() :
         global attackName
         if (attackName == "None") : 
-            attackName = window.attacks.currentText()
+            attackName = frame.main.attacks.currentText()
             if (len(targets) == 2 or attackName == "DHCP starving"
                 or (len(targets) == 1 and attackName == "SYN flooding")) :
-                window.console.append(attackName + " attack started")
+                frame.main.console.append(attackName + " attack started")
                 #attacking(attackName)
                 
                 print('startinng attacking .... '+ attackName)
@@ -199,22 +228,22 @@ if __name__ == "__main__":
                 startAttackThread.signals.result.connect(attacking_output)
                 startAttackThread.signals.finished.connect(attacking_complete)
 
-                window.threadpool.start(startAttackThread)
+                frame.main.threadpool.start(startAttackThread)
             else :
                 mess = "You have to select two targets first"
                 print(mess)
-                window.console.append(mess)
+                frame.main.console.append(mess)
 
         else :
             mess = "You should stop the running attack first"
             print(mess)
-            window.console.append(mess)
+            frame.main.console.append(mess)
 
     @Slot()
     def stopAttackClicked() :
         global attackName
         if (attackName != "None") : 
-            window.console.append(attackName + " attack stopped")
+            frame.main.console.append(attackName + " attack stopped")
             global attackingStatus
             attackingStatus = False
             
@@ -224,41 +253,63 @@ if __name__ == "__main__":
             stopAttackThread.signals.result.connect(stoppingAttack_output)
             stopAttackThread.signals.finished.connect(stoppingAttack_complete)
 
-            window.threadpool.start(stopAttackThread)            
+            frame.main.threadpool.start(stopAttackThread)            
            
             attackName = "None"
 
         else :
-            window.console.append("You should start the attack first")
+            frame.main.console.append("You should start the attack first")
     
     @Slot()
     def attackSelected() :
-        attackName = window.attacks.currentText()
+        attackName = frame.main.attacks.currentText()
         print('attack selected is :' + attackName)
+        vbox = QVBoxLayout()
+        vbox.setObjectName('vbox')
+        if attackName == 'ARP spoofing' :
+            childs = frame.main.boxattacks.children()
+            for child in childs:
+                if child.objectName() in ['interfaces'] :
+                    child.setParent(None)
+                    childs = frame.main.boxattacks.children()
+            
 
         if attackName == 'DHCP starving' :
-            vbox = QVBoxLayout()
-
             global interfaces
             interfaces = QComboBox()
+            interfaces.setObjectName('interfaces')
             listInterfaces = getInterfaces()
             for inter in listInterfaces:
                 if (inter not in ['lo', 'docker0']) :
                     interfaces.addItem(inter)
 
-            vbox.addWidget(interfaces)
-            window.boxattacks.setLayout(vbox)
+            childs = frame.main.boxattacks.children()
+            exist=False
+            for child in childs:
+                if child.objectName() in ['vbox'] :
+                    child.addWidget(interfaces)
+                    exist=True
+            if exist==False :                   
+                vbox.addWidget(interfaces)
+                frame.main.boxattacks.setLayout(vbox)
 
-    window.scan.clicked.connect(scan)
-    window.addTarget.clicked.connect(addTargetClicked)
-    window.deleteTarget.clicked.connect(deleteTargetClicked)
-    window.startAttack.clicked.connect(startAttackClicked)
-    window.stopAttack.clicked.connect(stopAttackClicked)
-    window.attacks.currentTextChanged.connect(attackSelected)
+        if attackName == 'SYN flooding' :
+            childs = frame.main.boxattacks.children()
+            for child in childs:
+                if child.objectName() in ['interfaces'] :
+                    child.setParent(None)
+                    childs = frame.main.boxattacks.children()
+
+    frame.main.scan.clicked.connect(scan)
+    frame.main.addTarget.clicked.connect(addTargetClicked)
+    frame.main.deleteTarget.clicked.connect(deleteTargetClicked)
+    frame.main.startAttack.clicked.connect(startAttackClicked)
+    frame.main.stopAttack.clicked.connect(stopAttackClicked)
+    frame.main.attacks.currentTextChanged.connect(attackSelected)
     
 
-    window.threadpool = QThreadPool()
+    frame.main.threadpool = QThreadPool()
 
-    window.show()
+    frame.main.show()
 
     sys.exit(app.exec_())
