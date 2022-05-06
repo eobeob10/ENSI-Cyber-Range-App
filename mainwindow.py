@@ -214,7 +214,7 @@ if __name__ == "__main__":
             frame.main.target1.setText("Select Target 1")
             frame.main.target2.setText("Select Target 2")
         else :
-            frame.main.console.append("List already cleared")
+            frame.main.console.append("Targets already cleared")
     @Slot()
     def startAttackClicked() :
         global attackName
