@@ -241,6 +241,11 @@ if __name__ == "__main__":
             frame.main.console.append(mess)
 
     @Slot()
+    def clearListClicked() :
+        frame.main.listWidget.clear()
+
+
+    @Slot()
     def stopAttackClicked() :
         global attackName
         if (attackName != "None") : 
@@ -307,6 +312,8 @@ if __name__ == "__main__":
     frame.main.startAttack.clicked.connect(startAttackClicked)
     frame.main.stopAttack.clicked.connect(stopAttackClicked)
     frame.main.attacks.currentTextChanged.connect(attackSelected)
+    frame.main.clearList.clicked.connect(clearListClicked)
+
     
 
     frame.main.threadpool = QThreadPool()
