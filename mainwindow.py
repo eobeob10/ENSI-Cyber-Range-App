@@ -219,9 +219,9 @@ if __name__ == "__main__":
     def startAttackClicked() :
         global attackName
         if (attackName == "None") : 
-            attackName = frame.main.attacks.currentText()
             if (len(targets) == 2 or attackName == "DHCP starving"
                 or (len(targets) == 1 and attackName == "SYN flooding")) :
+                attackName = frame.main.attacks.currentText()
                 frame.main.console.append(attackName + " attack started")
                 #attacking(attackName)
                 
