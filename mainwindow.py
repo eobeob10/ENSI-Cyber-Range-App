@@ -327,13 +327,14 @@ if __name__ == "__main__":
     frame.main.startAttack.clicked.connect(startAttackClicked)
     frame.main.stopAttack.clicked.connect(stopAttackClicked)
     frame.main.attacks.currentTextChanged.connect(attackSelected)
-<<<<<<< Updated upstream
+
     frame.main.clearList.clicked.connect(clearListClicked)
 
     
-=======
+
     frame.main.wireshark.clicked.connect(startwireshark)
->>>>>>> Stashed changes
+
+
 
     frame.main.threadpool = QThreadPool()
 
