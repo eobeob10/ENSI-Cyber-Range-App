@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QGroupBox,
-    QLabel, QListWidget, QListWidgetItem, QMainWindow,
-    QMenuBar, QPushButton, QSizePolicy, QStatusBar,
-    QTextBrowser, QWidget)
+from PySide6.QtWidgets import (QApplication, QComboBox, QGroupBox, QLabel,
+    QListWidget, QListWidgetItem, QMainWindow, QMenuBar,
+    QPushButton, QSizePolicy, QStatusBar, QTextBrowser,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -29,25 +29,10 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.scan = QPushButton(self.centralwidget)
         self.scan.setObjectName(u"scan")
-        self.scan.setGeometry(QRect(30, 140, 151, 51))
-        self.groupBox = QGroupBox(self.centralwidget)
-        self.groupBox.setObjectName(u"groupBox")
-        self.groupBox.setGeometry(QRect(30, 320, 151, 141))
-        self.checkBox = QCheckBox(self.groupBox)
-        self.checkBox.setObjectName(u"checkBox")
-        self.checkBox.setGeometry(QRect(10, 10, 131, 26))
-        self.checkBox_2 = QCheckBox(self.groupBox)
-        self.checkBox_2.setObjectName(u"checkBox_2")
-        self.checkBox_2.setGeometry(QRect(10, 40, 131, 26))
-        self.checkBox_3 = QCheckBox(self.groupBox)
-        self.checkBox_3.setObjectName(u"checkBox_3")
-        self.checkBox_3.setGeometry(QRect(10, 70, 131, 26))
-        self.checkBox_4 = QCheckBox(self.groupBox)
-        self.checkBox_4.setObjectName(u"checkBox_4")
-        self.checkBox_4.setGeometry(QRect(10, 100, 131, 26))
-        self.pushButton_3 = QPushButton(self.centralwidget)
-        self.pushButton_3.setObjectName(u"pushButton_3")
-        self.pushButton_3.setGeometry(QRect(30, 470, 151, 51))
+        self.scan.setGeometry(QRect(30, 170, 151, 51))
+        self.wireshark = QPushButton(self.centralwidget)
+        self.wireshark.setObjectName(u"wireshark")
+        self.wireshark.setGeometry(QRect(30, 450, 151, 51))
         self.console = QTextBrowser(self.centralwidget)
         self.console.setObjectName(u"console")
         self.console.setGeometry(QRect(30, 540, 631, 81))
@@ -60,10 +45,10 @@ class Ui_MainWindow(object):
         self.listWidget.setGeometry(QRect(190, 140, 221, 381))
         self.deleteTarget = QPushButton(self.centralwidget)
         self.deleteTarget.setObjectName(u"deleteTarget")
-        self.deleteTarget.setGeometry(QRect(30, 260, 151, 51))
+        self.deleteTarget.setGeometry(QRect(30, 310, 151, 51))
         self.addTarget = QPushButton(self.centralwidget)
         self.addTarget.setObjectName(u"addTarget")
-        self.addTarget.setGeometry(QRect(30, 210, 151, 41))
+        self.addTarget.setGeometry(QRect(30, 380, 151, 51))
         self.startAttack = QPushButton(self.centralwidget)
         self.startAttack.setObjectName(u"startAttack")
         self.startAttack.setGeometry(QRect(680, 580, 181, 41))
@@ -100,11 +85,13 @@ class Ui_MainWindow(object):
         self.cyberrange = QLabel(self.centralwidget)
         self.cyberrange.setObjectName(u"cyberrange")
         self.cyberrange.setGeometry(QRect(900, 10, 111, 111))
+        self.clearList = QPushButton(self.centralwidget)
+        self.clearList.setObjectName(u"clearList")
+        self.clearList.setGeometry(QRect(30, 240, 151, 51))
         MainWindow.setCentralWidget(self.centralwidget)
         self.background.raise_()
         self.scan.raise_()
-        self.groupBox.raise_()
-        self.pushButton_3.raise_()
+        self.wireshark.raise_()
         self.console.raise_()
         self.copyrights.raise_()
         self.listWidget.raise_()
@@ -119,6 +106,7 @@ class Ui_MainWindow(object):
         self.boxattacks.raise_()
         self.logoensi.raise_()
         self.cyberrange.raise_()
+        self.clearList.raise_()
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
         self.menubar.setGeometry(QRect(0, 0, 1096, 25))
@@ -135,12 +123,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.scan.setText(QCoreApplication.translate("MainWindow", u"Scan", None))
-        self.groupBox.setTitle("")
-        self.checkBox.setText(QCoreApplication.translate("MainWindow", u"CheckBox", None))
-        self.checkBox_2.setText(QCoreApplication.translate("MainWindow", u"CheckBox", None))
-        self.checkBox_3.setText(QCoreApplication.translate("MainWindow", u"CheckBox", None))
-        self.checkBox_4.setText(QCoreApplication.translate("MainWindow", u"CheckBox", None))
-        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"Wireshark", None))
+        self.wireshark.setText(QCoreApplication.translate("MainWindow", u"Wireshark", None))
         self.console.setHtml(QCoreApplication.translate("MainWindow", u"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -184,5 +167,6 @@ class Ui_MainWindow(object):
         self.logoensi.setText("")
         self.background.setText("")
         self.cyberrange.setText("")
+        self.clearList.setText(QCoreApplication.translate("MainWindow", u"Clear list", None))
     # retranslateUi
 

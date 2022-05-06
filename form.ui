@@ -18,7 +18,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>140</y>
+      <y>170</y>
       <width>151</width>
       <height>51</height>
      </rect>
@@ -27,76 +27,11 @@
      <string>Scan</string>
     </property>
    </widget>
-   <widget class="QGroupBox" name="groupBox">
+   <widget class="QPushButton" name="wireshark">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>320</y>
-      <width>151</width>
-      <height>141</height>
-     </rect>
-    </property>
-    <property name="title">
-     <string/>
-    </property>
-    <widget class="QCheckBox" name="checkBox">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>131</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CheckBox</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_2">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>40</y>
-       <width>131</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CheckBox</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_3">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>70</y>
-       <width>131</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CheckBox</string>
-     </property>
-    </widget>
-    <widget class="QCheckBox" name="checkBox_4">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>100</y>
-       <width>131</width>
-       <height>26</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>CheckBox</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QPushButton" name="pushButton_3">
-    <property name="geometry">
-     <rect>
-      <x>30</x>
-      <y>470</y>
+      <y>450</y>
       <width>151</width>
       <height>51</height>
      </rect>
@@ -157,7 +92,7 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>260</y>
+      <y>310</y>
       <width>151</width>
       <height>51</height>
      </rect>
@@ -170,9 +105,9 @@ p, li { white-space: pre-wrap; }
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>210</y>
+      <y>380</y>
       <width>151</width>
-      <height>41</height>
+      <height>51</height>
      </rect>
     </property>
     <property name="text">
@@ -350,10 +285,22 @@ p, li { white-space: pre-wrap; }
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="clearList">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>240</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Clear list</string>
+    </property>
+   </widget>
    <zorder>background</zorder>
    <zorder>scan</zorder>
-   <zorder>groupBox</zorder>
-   <zorder>pushButton_3</zorder>
+   <zorder>wireshark</zorder>
    <zorder>console</zorder>
    <zorder>copyrights</zorder>
    <zorder>listWidget</zorder>
@@ -368,6 +315,7 @@ p, li { white-space: pre-wrap; }
    <zorder>boxattacks</zorder>
    <zorder>logoensi</zorder>
    <zorder>cyberrange</zorder>
+   <zorder>clearList</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
