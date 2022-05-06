@@ -103,7 +103,8 @@ def stopAttacking(name) :
 
 
 def scanning_complete():
-    print("scanning COMPLETE!")
+    frame.main.console.append("Scan Complete")
+    print("Scan COMPLETE!")
 
 def scanning_output(output):
     listHosts = output
@@ -166,8 +167,8 @@ if __name__ == "__main__":
     @Slot()
     def scan(scanning):
         if(scanning==False) :
-            frame.main.console.append("Scanner begin")
-            print("Scanner begin") 
+            frame.main.console.append("Scanning ...")
+            print("Scanning ...") 
             scanning = True
             #listHosts = scanner()
 
