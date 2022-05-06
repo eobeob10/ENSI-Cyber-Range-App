@@ -1,3 +1,4 @@
+from re import sub
 import sys, time, traceback
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QListWidgetItem, QVBoxLayout
@@ -305,6 +306,20 @@ if __name__ == "__main__":
                 if child.objectName() in ['interfaces'] :
                     child.setParent(None)
                     childs = frame.main.boxattacks.children()
+    @Slot()
+    def startwireshark() :
+        import sys
+        import os
+        is_windows = hasattr(sys, 'getwindowsversion')
+        if (is_windows) :
+            os.popen("\"%programfiles%\"\Wireshark\Wireshark.exe")
+        else :
+            
+            os.popen("wireshark")
+            
+
+
+
 
     frame.main.scan.clicked.connect(scan)
     frame.main.addTarget.clicked.connect(addTargetClicked)
@@ -312,9 +327,13 @@ if __name__ == "__main__":
     frame.main.startAttack.clicked.connect(startAttackClicked)
     frame.main.stopAttack.clicked.connect(stopAttackClicked)
     frame.main.attacks.currentTextChanged.connect(attackSelected)
+<<<<<<< Updated upstream
     frame.main.clearList.clicked.connect(clearListClicked)
 
     
+=======
+    frame.main.wireshark.clicked.connect(startwireshark)
+>>>>>>> Stashed changes
 
     frame.main.threadpool = QThreadPool()
 
