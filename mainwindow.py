@@ -1,8 +1,9 @@
 from re import sub
 import sys, time, traceback
 from PySide6.QtUiTools import QUiLoader
-from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QListWidgetItem, QVBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QComboBox, QListWidgetItem
 from PySide6.QtCore import QFile, QObject, Slot, Signal, QRunnable, QThreadPool
+from PySide6.QtGui import QFont
 from qt_material import *
 
 from networkScanner.networkScanner import scanner
@@ -271,41 +272,39 @@ if __name__ == "__main__":
     def attackSelected() :
         attackName = frame.main.attacks.currentText()
         print('attack selected is :' + attackName)
-        vbox = QVBoxLayout()
-        vbox.setObjectName('vbox')
         if attackName == 'ARP spoofing' :
-            childs = frame.main.boxattacks.children()
-            for child in childs:
-                if child.objectName() in ['interfaces'] :
+            children = frame.main.children()
+            for child in children :
+                if child.objectName() == "interfaces" :
                     child.setParent(None)
-                    childs = frame.main.boxattacks.children()
+            frame.main.description.setGeometry(420,290,641,231)
+            frame.main.description.setText("L'ARP spoofing, également appelé ARP poisoning, est une attaque de type \"Man in the Middle\" (MitM) qui permet aux attaquants d'intercepter les communications entre les périphériques réseau.")
+            frame.main.description.setFont(QFont('Segoe UI', 16))
             
-
         if attackName == 'DHCP starving' :
             global interfaces
             interfaces = QComboBox()
             interfaces.setObjectName('interfaces')
+            interfaces.setGeometry(420, 290, 641, 41)
             listInterfaces = getInterfaces()
+
             for inter in listInterfaces:
                 if (inter not in ['lo', 'docker0']) :
                     interfaces.addItem(inter)
 
-            childs = frame.main.boxattacks.children()
-            exist=False
-            for child in childs:
-                if child.objectName() in ['vbox'] :
-                    child.addWidget(interfaces)
-                    exist=True
-            if exist==False :                   
-                vbox.addWidget(interfaces)
-                frame.main.boxattacks.setLayout(vbox)
+            frame.main.layout().addWidget(interfaces)
+            frame.main.description.setGeometry(420,340,641,181)
+            frame.main.description.setText("DHCP starvation est une attaque qui sert à inonder le serveur avec des messages DHCP Discover et Request avec de nouvelles (spoofed) @MAC afin de réserver toutes les adresses IP disponibles.")
+            frame.main.description.setFont(QFont('Segoe UI', 16))
 
         if attackName == 'SYN flooding' :
-            childs = frame.main.boxattacks.children()
-            for child in childs:
-                if child.objectName() in ['interfaces'] :
+            children = frame.main.children()
+            for child in children :
+                if child.objectName() == "interfaces" :
                     child.setParent(None)
-                    childs = frame.main.boxattacks.children()
+            frame.main.description.setGeometry(420,290,641,231)
+            frame.main.description.setText("SYN flooding est une attaque qui sert à Etablir plusieurs connexions successives semi-ouvertes (avec adresse IP fausse) afin de saturer la pile TCP de la victime.")
+            frame.main.description.setFont(QFont('Segoe UI', 16))
     @Slot()
     def startwireshark() :
         import sys
@@ -327,6 +326,9 @@ if __name__ == "__main__":
     frame.main.startAttack.clicked.connect(startAttackClicked)
     frame.main.stopAttack.clicked.connect(stopAttackClicked)
     frame.main.attacks.currentTextChanged.connect(attackSelected)
+    
+
+
 
     frame.main.clearList.clicked.connect(clearListClicked)
 
